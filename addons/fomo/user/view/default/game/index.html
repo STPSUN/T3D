@@ -21,7 +21,7 @@
                 
                 <th data-options="field:'coin_name',width:120, align:'center'">币种名称</th>
                 <th data-options="field:'hour',width:140, align:'center'">时长(分钟)</th>
-                <th data-options="field:'winner_rate',width:100, align:'center'">胜利者比率</th>
+                <!--<th data-options="field:'winner_rate',width:100, align:'center'">胜利者比率</th>-->
                 <!--<th data-options="field:'team_rate',width:100, align:'center'">团队比率</th>-->
                 <!--<th data-options="field:'fund_rate',width:100, align:'center',formatter:formatRate">基金比率</th>-->
                 <th data-options="field:'total_amount',width:120,align:'center',sortable: true">投注总额</th>
@@ -107,7 +107,7 @@
             return;
         }
         var url = getURL('edit');
-        openBarWin('添加', 800, 300, url, function () {
+        openBarWin('添加', 400, 220, url, function () {
             reload();
         });
     });

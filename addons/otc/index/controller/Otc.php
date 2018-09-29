@@ -61,6 +61,10 @@ class Otc extends  \web\index\controller\AddonIndexBase{
 
             $total = $m->getTotal($filter);
             $rows = $m->getList($this->getPageIndex(),$this->getPageSize(),$filter,$fields,$orderby);
+            foreach ($rows as &$v)
+            {
+                $v['deal_time'] = empty($v['deal_time']) ? '' : $v['deal_time'];
+            }
             return $this->toDataGrid($total, $rows);
         } catch (\Exception $ex) {
             return $this->failJSON($ex->getMessage());

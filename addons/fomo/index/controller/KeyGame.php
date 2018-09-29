@@ -102,54 +102,22 @@ class KeyGame extends Fomobase
                 $invite_rate = $confM->getValByName('invite_rate');  //投注推荐奖励
                 $remark = '推荐投注分红';
                 $this->parentDividend($this->user_id, $invite_rate, $key_total_price, $coin_id, 3, $game_id, $remark);
-//                $userM = new \addons\member\model\MemberAccountModel();
-//                $pid = $userM->getPID($this->user_id);
-//                if (!empty($pid)) {
-//                    $invite_str = $confM->getValByName('invite_rate');  //投注推荐奖励
-//                    $invite_rate = explode(",", $invite_str);
-//                    foreach($invite_rate as $val){
-//                        if(!$val){
-//                            $pid = $userM->getPID( $pid );
-//                            if(!$pid){
-//                                break;
-//                            }
-//                            continue;
-//                        }
-//                        $invite_amount = $this->countRate($key_total_price, $val); //邀请奖励
-//                        //更新余额
-//                        $pidBalance = $balanceM->updateBalance($pid, $invite_amount, $coin_id, true);
-//                        //添加分红记录
-//                        if($pidBalance){
-//                            $rewardM = new \addons\fomo\model\RewardRecord();
-//                            $before_amount = $pidBalance['before_amount'];
-//                            $after_amount = $pidBalance['amount'];
-//                            $type = 3; //奖励类型 0=投注分红，1=胜利战队分红，2=胜利者分红，3=邀请分红
-//                            $remark = '推荐投注分红';
-//                            $rewardM->addRecord($pid, $coin_id, $before_amount, $invite_amount, $after_amount, $type, $game_id,$remark);
-//                            //to do 添加分红记录 type = 3
-//                            $pid = $userM->getPID( $pid );
-//                            if(!$pid){
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }
 
                 //空投
-                $drop_amount = 0;
-                $is_drop = $confM->getValByName('is_drop');
-                if ($is_drop == 1) {
-                    //空头总额增加
-                    $drop_rate = $confM->getValByName('drop_rate');
-                    $drop_amount = $this->countRate($key_total_price, $drop_rate); //空投金额
-                    $gameM->where('id', $game_id)->setInc('drop_total_amount', $drop_amount);
-
-                    //获取空投
-                    $drop_done = $this->getAirDrop($key_num, $key_total_price, $game_id, $coin_id, $game['drop_total_amount']);
-                    if ($drop_done == false) {
-                        return $this->failData(lang('Drop failure'));
-                    }
-                }
+//                $drop_amount = 0;
+//                $is_drop = $confM->getValByName('is_drop');
+//                if ($is_drop == 1) {
+//                    //空头总额增加
+//                    $drop_rate = $confM->getValByName('drop_rate');
+//                    $drop_amount = $this->countRate($key_total_price, $drop_rate); //空投金额
+//                    $gameM->where('id', $game_id)->setInc('drop_total_amount', $drop_amount);
+//
+//                    //获取空投
+//                    $drop_done = $this->getAirDrop($key_num, $key_total_price, $game_id, $coin_id, $game['drop_total_amount']);
+//                    if ($drop_done == false) {
+//                        return $this->failData(lang('Drop failure'));
+//                    }
+//                }
 
                 //战队:投注p3d,f3d奖励队列,奖池+,用户key+,时间+
                 $pool_rate = $confM->getValByName('pool_rate'); //投注进入奖池比率
@@ -170,21 +138,15 @@ class KeyGame extends Fomobase
                 $game['total_amount'] = $game['total_amount'] + $key_total_price;
                 $game['pool_total_amount'] = $game['pool_total_amount'] + $pool_amount;
                 $game['release_total_amount'] = $game['release_total_amount'] + $release_amount;
-                $game['drop_total_amount'] = $game['drop_total_amount'] + $drop_amount;
+//                $game['drop_total_amount'] = $game['drop_total_amount'] + $drop_amount;
                 $game['update_time'] = NOW_DATETIME;
                 $gameM->save($game);
-//                战队总额+
-//                $teamTotalM = new \addons\fomo\model\TeamTotal();
-//                $team_total = $teamTotalM->getDataByWhere($team_id, $game_id, $coin_id);
-//                $team_total['before_total_amount'] = $team_total['total_amount'];
-//                $team_total['total_amount'] = $team_total['total_amount'] + $key_total_price;
-//                $team_total['update_time'] = NOW_DATETIME;
-//                $teamTotalM->save($team_total);
+
 //                key 价格+ 
                 $current_price_data['key_amount'] = $current_price + $key_inc_amount * $key_num;
                 $current_price_data['update_time'] = NOW_DATETIME;
                 $priceM->save($current_price_data);
-//                战队:投注p3d,f3d奖励队列
+
                 //TODO: 全网分红
                 $sequeueM = new \addons\fomo\model\BonusSequeue();
                 $whole_rate = $confM->getValByName('whole_rate'); //投注进入奖池比率
