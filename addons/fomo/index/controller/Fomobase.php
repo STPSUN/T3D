@@ -177,6 +177,13 @@ class Fomobase extends \web\index\controller\AddonIndexBase{
                 if(empty($balance)){
                     return $this->failData(lang('Lack of balance'));
                 }
+
+                $without_limit_rate = $sysM->getValByName("withdraw_limit_rate");
+
+                $without_limit_amount = $this->countRate($balance['amount'],$without_limit_rate);
+                if($amount > $without_limit_amount)
+                    return $this->failData('提币数量不能超过总额的' . $without_limit_rate . '%');
+
                 $ethM = new \addons\eth\model\EthTradingOrder();
 
                 $filter = 'user_id = '. $this->user_id ." and coin_id = ".$coin_id;
