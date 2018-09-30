@@ -34,6 +34,7 @@ class RewardRecord extends \web\user\controller\AddonUserBase{
         $m = new \addons\fomo\model\RewardRecord();
         $filter = '1=1';
         if($type && $type != -1){
+            $type = ($type == 99) ? 0 : $type;
             $filter .= ' and type='. $type;
         }
         if($coin_id && $coin_id !=0){

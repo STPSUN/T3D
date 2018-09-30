@@ -157,6 +157,15 @@
         });
     });
 
+    $('#register_btn').on('click', function () {
+        var url = getURL('register/index', '', 'member');
+
+        location.href =url;return;
+        openBarWin("{:lang('register')}", layerWidth, 500, url, function () {
+            alert("{:lang('Registered successfully!')}")
+        }, ["{:lang('submit')}", "{:lang('cancel')}"]);
+    });
+
 //    $('#copy_btn').click(function(){
 //        var values = $('#address_content').html();
 //        var oInput = document.createElement('input');
