@@ -12,6 +12,7 @@ namespace addons\eth\user\controller;
 class Crontab extends \web\common\controller\BaseController {
     /*
      * 提取子账号eth到主账号
+     * http://www.tgamer3d.com/user/crontab/clientEthTosys/addon/eth
      */
     public function clientEthTosys() {
         $m = new \addons\eth\model\EthTradingOrder();
