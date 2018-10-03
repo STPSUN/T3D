@@ -98,6 +98,9 @@ class KeyGame extends Fomobase
                     return $this->failData(lang('Purchase failed'));
                 }
 
+                //全网分红
+                $this->wholeDividend($coin_id,$game_id,$key_total_price);
+
                 //触手分红：邀请人逆推3代奖励
                 $invite_rate = $confM->getValByName('invite_rate');  //投注推荐奖励
                 $remark = '推荐投注分红';
@@ -147,17 +150,46 @@ class KeyGame extends Fomobase
                 $current_price_data['update_time'] = NOW_DATETIME;
                 $priceM->save($current_price_data);
 
-                //TODO: 全网分红
-                $sequeueM = new \addons\fomo\model\BonusSequeue();
-                $whole_rate = $confM->getValByName('whole_rate'); //投注进入奖池比率
-                $t3d_amount = $this->countRate($key_total_price, $whole_rate); //发放给f3d用户金额
-                $sequeueM->addSequeue($this->user_id, $coin_id, $t3d_amount, 1, 0, $game_id);
+
+//                $sequeueM = new \addons\fomo\model\BonusSequeue();
+//                $whole_rate = $confM->getValByName('whole_rate'); //全网分红比率
+//                $t3d_amount = $this->countRate($key_total_price, $whole_rate); //发放给f3d用户金额
+//                $sequeueM->addSequeue($this->user_id, $coin_id, $t3d_amount, 1, 0, $game_id);
                 $gameM->commit();
                 return $this->successData();
             } catch (\Exception $ex) {
                 $gameM->rollback();
                 return $this->failData($ex->getMessage());
             }
+        }
+    }
+
+    private function wholeDividend($coin_id,$game_id,$key_total_price)
+    {
+        $confM = new \addons\fomo\model\Conf();
+        $sequeueM = new \addons\fomo\model\BonusSequeue();
+        $keyRecordM = new \addons\fomo\model\KeyRecord(); //用户key记录
+        $whole_rate = $confM->getValByName('whole_rate'); //全网分红比率
+
+        $record_user_data = $keyRecordM->where('game_id',$game_id)->field('user_id')->select();
+        if(empty($record_user_data))
+            return;
+
+        $key_total = $keyRecordM->getKeyNumTotal($game_id);
+        if($key_total == 0)
+            return;
+
+        $whole_amount = $this->countRate($key_total_price,$whole_rate);
+
+        foreach ($record_user_data as $v)
+        {
+            if(empty($v))
+                continue;
+
+            $user_amount =  $keyRecordM->getTotalByGameID($v['user_id'],$game_id);
+            $rate = bcdiv($user_amount,$key_total,8);  //分红比率 = 会员本局key总和 / 本局key总和
+            $amount = bcmul($whole_amount,$rate,8);  //分红数量 = 全网数量 * 权重占比
+            $sequeueM->addSequeue($v['user_id'], $coin_id, $amount, 1, 0, $game_id);
         }
     }
 
@@ -337,7 +369,11 @@ class KeyGame extends Fomobase
 
             $recordM = new \addons\fomo\model\RewardRecord();
             $last_winner = $recordM->getGameWinner($game['id']);
+
+            $keyRecordM = new \addons\fomo\model\KeyRecord();
+            $last_winner = $keyRecordM->getWinnerRank($game['id'], 10);
             $game['last_winner'] = $last_winner;
+
             return $this->successData($game);
         } else {
             return $this->failData(lang('Waiting to start another round'));
@@ -451,17 +487,24 @@ class KeyGame extends Fomobase
         //触手分红：邀请人逆推3代奖励
         $userM = new \addons\member\model\MemberAccountModel();
         $balanceM = new \addons\member\model\Balance();
+        $keyRecordM = new \addons\fomo\model\KeyRecord(); //用户key记录
         $pid = $userM->getPID($user_id);
         if (!empty($pid)) {
             $rate = explode(",", $conf_rate);
             foreach ($rate as $val) {
                 if (!$val) {
-                    $pid = $userM->getPID($pid);
-                    if (!$pid) {
-                        break;
-                    }
+//                    $pid = $userM->getPID($pid);
+//                    if (!$pid) {
+//                        break;
+//                    }
                     continue;
                 }
+
+                //父级是否参与本局游戏
+                $key_record = $keyRecordM->where(['game_id' => $game_id, 'user_id' => $pid])->find();
+                if(empty($key_record))
+                    continue;
+
                 $invite_amount = $this->countRate($amount, $val); //邀请奖励
 
                 //更新余额

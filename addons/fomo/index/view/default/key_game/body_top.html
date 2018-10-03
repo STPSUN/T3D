@@ -130,7 +130,7 @@
             getRunGame();
             getBalance();
         },5000);
-    })
+    });
     var game_id = 0,coin_id = 1,coin_name='ETH';
     function getRunGame(){
         var url = getURL('getGame');
@@ -141,7 +141,8 @@
                     if(data.status == 2 &&  data.last_winner){
                       var last_winner = data.last_winner[0];
                       if(last_winner){
-                          $(".top-title").html((last_winner ? last_winner.username : '')  + "{:lang('gain')}"+ (last_winner ? last_winner.amount : 0 ));
+//                          $(".top-title").html((last_winner ? last_winner.username : '')  + "{:lang('gain')}"+ (last_winner ? last_winner.amount : 0 ));
+                          $(".top-title").html(last_winner.username + "获得第一名");
                       }else{
                           $(".top-title").html("等待下一局开启");
                       }
@@ -152,13 +153,13 @@
                     $(".release_total_cny").html(data.release_total_cny);   //已发奖金usdt
                     $(".release_total_amount").html(data.release_total_amount); //已发奖金
                     $(".game_total_keys").html(data.game_total_keys);   //key总数
-                    $(".total_amount").html(data.pool_total_amount);   //总投资额度ETH
+                    $(".total_amount").html(data.total_amount);   //总投资额度ETH
                     $(".total_amount_usdt").html(data.total_amount_usdt);   //总投资额度usdt
 //                    $(".game_total_keys_usdt").html(data.total_amount_usdt);   //总投资额度usdt
                     $(".total_keys").html(data.total_keys);
                     $(".total_buy_seconds").html(data.total_buy_seconds);   //已购时间
 
-                    $(".f3d-total-amount").html(data.total_amount)
+                    $(".f3d-total-amount").html(data.total_amount);
 //                    $(".f3d-money").html(data.release_total_amount)
                     coin_id = data.coin_id
                     game_id = data.id

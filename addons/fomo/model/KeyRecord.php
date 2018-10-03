@@ -153,5 +153,16 @@ class KeyRecord extends \web\common\model\BaseModel{
 
         return $data;
     }
+
+    public function getKeyNumTotal($game_id)
+    {
+        $sql = "SELECT SUM(key_num) AS num FROM tp_fomo_key_record WHERE game_id = $game_id";
+
+        $data = $this->query($sql);
+        if(empty($data))
+            return 0;
+
+        return $data[0]['num'];
+    }
   
 }
