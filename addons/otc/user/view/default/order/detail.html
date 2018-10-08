@@ -18,7 +18,7 @@
             <div class="control-group">
                 <label class="control-label">数量</label>
                 <div class="controls">
-                    <input type="text" id="num" name="num" class="form-control" disabled="disabled" />                                       
+                    <input type="text" id="amount" name="amount" class="form-control" disabled="disabled" />
                 </div>
             </div>
             <div class="control-group">
@@ -87,14 +87,14 @@
     function onLoadDataSuccess(data){
         $("#pic").attr('src',data.pic);
         if(data.pay_detail_json){
-            var pay_detail = JSON.parse(data.pay_detail_json)
-            var str ='';
-            for(var i in pay_detail){
-                if(str != '')
-                    str += ' '
-                str += pay_detail[i]
-            }
-            $("#pay_detail").val(str);
+//            var pay_detail = JSON.parse(data.pay_detail_json);
+//            var str ='';
+//            for(var i in pay_detail){
+//                if(str != '')
+//                    str += ' '
+//                str += pay_detail[i]
+//            }
+            $("#pay_detail").val(data.pay_detail_json);
         }
     }
 </script>

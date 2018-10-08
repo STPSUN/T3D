@@ -222,7 +222,31 @@ class Order extends \web\index\controller\AddonIndexBase{
             if(empty($pay_data))
                 return $this->failJSON('未设置收款方式');
 
-            $pay_detail_json = json_encode($pay_data,JSON_UNESCAPED_UNICODE);
+            $pay_detail_json = '';
+            foreach ($pay_data as $v)
+            {
+                switch ($v['type'])
+                {
+                    case 1:
+                    {
+                        $pay_detail_json .= ',' . '微信：' . $v['account'];
+                        break;
+                    }
+                    case 2:
+                    {
+                        $pay_detail_json .= ',' . '支付宝 ：' . $v['account'];
+                        break;
+                    }
+                    case 3:
+                    {
+                        $pay_detail_json .= ',' . '银行卡：' . '开户行 ' . $v['bank_address'] . ' ,' . '姓名：' . $v['name'] . ' ,' . '账号：' . $v['account'];
+                        break;
+                    }
+                }
+            }
+            $pay_detail_json = ltrim($pay_detail_json,',');
+
+//            $pay_detail_json = json_encode($pay_data,JSON_UNESCAPED_UNICODE);
             $paramM = new \web\common\model\sys\SysParameterModel();
             $is_tax = $paramM->getValByName('is_tax');
             $tax_amount = 0; //手续费金额 下单方出

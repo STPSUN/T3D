@@ -48,6 +48,7 @@ class Order extends \web\user\controller\AddonUserBase{
         $order_id = $this->_post('id');
         $m = new \addons\otc\model\OtcOrder();
         $order = $m->getOrderByStatus($order_id,3);
+        $user_id = $order['buy_user_id'];
         if(empty($order)){
             return $this->failData('订单不存在');
         }
@@ -105,7 +106,7 @@ class Order extends \web\user\controller\AddonUserBase{
             return $this->failData('订单不存在');
         }
         try{
-            $balanceM = new \addons\member\model\AssetModel();
+            $balanceM = new \addons\member\model\Balance();
             $ret = $balanceM->otcTradingConfirm($order_id);
             if($ret){
                 return $this->successData();
